@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>modeling a four bar mechanism</title>
+    <script src="https://sagecell.sagemath.org/static/jquery.min.js"></script>
+    <script src="https://sagecell.sagemath.org/embedded_sagecell.js"></script>
+    <script>
+$(function () {
+    // Make *any* div with class 'compute' a Sage cell 
+    sagecell.makeSagecell({inputLocation: 'div.compute',
+     template: sagecell.templates.minimal,
+                  evalButtonText: 'Launch the Interactive Applet Now'});
+});
+    </script>
+  </head>
+  <body style="width: 1000px;">
+
+  <h1>Interaction of Roots from Polynomials and their derivatives</h1>
+
+<p>An Interactive Applet powered by Sage and MathJax.</p>
+
+<hr>
+
+<h2>Overview</h2>
+
+Use the angle slider to see how r moves around the complex unit circle.
+
+<h2>Instructions</h2>
+
+Click on the button to launch the interactive applet.
+
+<div class="compute">
+<script type="text/x-sage">
+
+def get_roots(p):
+    """
+    Returns the roots of the polynomial p as a list of lists.
+    Each sublist in the returned list contains the real and
+    the imaginary part of a root of p.
+    """
+    solutions = p.roots(ring=CC)
+    return [[s[0].real(), s[0].imag()] for s in solutions]
+
+def plot_points_and_hulls_of_p_and_dp(p):
+    """
+    Plots the polyhedra of the roots of p and its derivative.
+    The points in the interior of the polyhedra are plotted as well.
+
+    """
+    dp = diff(p, x)
+    all_p_points  = get_roots(p)
+    all_dp_points = get_roots(dp)
+
+    P_point_plot = point(all_p_points, color='red', size=90)
+    p_hull   =  Polyhedron(vertices = all_p_points)
+    P_hull_plot = plot(p_hull,  point={'color':'red','pointsize':'90'},
+                                line={'color':'red','thickness':'3'},
+                             fill= False) # displays outer/convex hull
+
+    dP_point_plot = point(all_dp_points, color='green', size=30)
+    dp_hull   =  Polyhedron(vertices = all_dp_points)
+    dP_hull_plot = plot(dp_hull,  point={'color':'green', 'pointsize':'30'},
+                        line={'color':'green','thickness':'2'},fill= False) # displays outer/convex hull
+
+
+    return P_point_plot+P_hull_plot + dP_point_plot+dP_hull_plot
+
+@interact
+def animate_p(a = slider(0, 2*pi,pi/50,pi/4, label='angle')):
+    r = exp(I*a)
+    p = (x-r)*(x^4-1)
+    plot_points_and_hulls_of_p_and_dp((p)).show()
+
+</script> 
+</div>
+
+<h2>Discussion</h2>
+
+The scale on top of the figure allows the user to move the angle
+of polynomial (x-r)*(x^4-1) and it's derivative.
+
+<hr>
+Last modified on Monday 18 April 2019.
+</body>
+</html>
